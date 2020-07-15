@@ -15,6 +15,7 @@ public class ReachA extends Check {
 
     public ReachA(Vulcan vulcan) {
         super("ReachA", "Reach (Type A)", CheckType.COMBAT, vulcan);
+        setEnabled(UtilConfig.getInstance().getConfig().getBoolean("checks." + getType() + "." + getIdentifier() + ".enabled"));
     }
 
     @PacketHandler
