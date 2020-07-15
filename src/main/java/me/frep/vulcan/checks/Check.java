@@ -7,7 +7,7 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
@@ -29,15 +29,24 @@ public class Check implements Listener, PacketListener {
     private Integer maxViolations;
     private long violationResetTime;
 
-    public Check(String identifier, String name, CheckType checkType, Vulcan vulcan) {
+    public Check(String identifier, String name, CheckType checkType, boolean enabled, boolean bannable, int maxViolations, long violationResetTime) {
         this.identifier = identifier;
         this.name = name;
         this.checkType = checkType;
-        this.vulcan = vulcan;
-        this.enabled = UtilConfig.getInstance().getChecksConfig().getBoolean("checks." + getType() + "." + getIdentifier() + ".enabled");
-        this.bannable = UtilConfig.getInstance().getChecksConfig().getBoolean("checks." + getType() + "." + getIdentifier() + ".bannable");
-        this.maxViolations =  UtilConfig.getInstance().getChecksConfig().getInt("checks." + getType() + "." + getIdentifier() + ".maxViolations");
-        this.violationResetTime =  UtilConfig.getInstance().getChecksConfig().getLong("checks." + getType() + "." + getIdentifier() + ".violationResetTime");
+        this.vulcan = Vulcan.instance;
+
+        if (!getChecksConfig().isConfigurationSection("checks." + getType() + "." + getIdentifier())) {
+            getChecksConfig().set("checks." + getType() + "." + getIdentifier() + ".enabled", enabled);
+            getChecksConfig().set("checks." + getType() + "." + getIdentifier() + ".bannable", bannable);
+            getChecksConfig().set("checks." + getType() + "." + getIdentifier() + ".maxViolations", maxViolations);
+            getChecksConfig().set("checks." + getType() + "." + getIdentifier() + ".violationResetTime", violationResetTime);
+        }
+        UtilConfig.getInstance().saveChecksConfig();
+
+        this.enabled =  getChecksConfig().getBoolean("checks." + getType() + "." + getIdentifier() + ".enabled");
+        this.bannable =  getChecksConfig().getBoolean("checks." + getType() + "." + getIdentifier() + ".bannable");
+        this.maxViolations = getChecksConfig().getInt("checks." + getType() + "." + getIdentifier() + ".maxViolations");
+        this.violationResetTime = getChecksConfig().getLong("checks." + getType() + "." + getIdentifier() + ".violationResetTime");
     }
 
     public Vulcan getVulcan() {
@@ -162,5 +171,9 @@ public class Check implements Listener, PacketListener {
             }
             staff.spigot().sendMessage(alertMessage);
         }
+    }
+
+    private FileConfiguration getChecksConfig(){
+        return UtilConfig.getInstance().getChecksConfig();
     }
 }

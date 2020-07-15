@@ -26,11 +26,10 @@ public final class Vulcan extends JavaPlugin {
         instance = this;
         PacketEvents.load();
         PacketEvents.start(this);
-        registerCommands();
         UtilConfig.getInstance().generateConfig();
         UtilConfig.getInstance().generateChecksConfig();
+        registerCommands();
         enableAlerts();
-        registerChecks();
     }
 
     @Override

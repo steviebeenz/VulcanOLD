@@ -9,8 +9,8 @@ import org.bukkit.event.player.PlayerMoveEvent;
 
 public class SpeedA extends Check {
 
-    public SpeedA(Vulcan vulcan) {
-        super("SpeedA", "Speed (Type A)", CheckType.MOVEMENT, vulcan);
+    public SpeedA() {
+        super("SpeedA", "Speed (Type A)", CheckType.MOVEMENT, true, true, 8, 120000);
     }
 
     @EventHandler
