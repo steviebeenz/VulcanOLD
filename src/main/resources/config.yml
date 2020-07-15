@@ -1,0 +1,13 @@
+prefix: '&8[&c&l!&8]'
+alerts:
+  message: '%prefix% &c%player% &7failed &b%check% &7[VL: &c%vl%&7]'
+  hover:
+    - '&7Ping: &c%ping% &8| &7TPS: &c%tps%'
+    - '&7Information: %info%'
+    - '&r'
+    - '&7Click to teleport to &b%player%&7.'
+  click-command: '/tp %player%'
+  toggled-on-message: '%prefix% &7Vulcan alerts &aenabled&7!'
+  toggled-off-message: '%prefix% &7Vulcan alerts &cdisabled&7!'
+  show-in-console: true
+  console-message: "[Vulcan] %player% failed %check% [VL: %vl%] [Ping: %ping%] [TPS: %tps%]"

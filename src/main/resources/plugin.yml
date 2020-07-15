@@ -1,0 +1,10 @@
+name: Vulcan
+version: ${project.version}
+main: me.frep.vulcan.Vulcan
+api-version: 1.16
+authors: [frep]
+description: Vulcan Anti-Cheat
+commands:
+  alerts:
+    description: Enable/disable Vulcan alert messages.
+    usage: /<command>
