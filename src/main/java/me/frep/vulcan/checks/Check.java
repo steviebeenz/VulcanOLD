@@ -56,7 +56,9 @@ public class Check implements Listener, PacketListener {
         return this.checkType;
     }
 
-    public boolean isEnabled() { return this.enabled; }
+    public boolean isEnabled() {
+        return this.enabled;
+    }
 
     public boolean isBannable() {
         return this.bannable;

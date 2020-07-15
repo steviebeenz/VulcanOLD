@@ -59,12 +59,6 @@ public class UtilConfig {
             e.printStackTrace();
         }
         for (Check check : Vulcan.checks) {
-            getChecksConfig().set("checks." + check.getType() + "." + check.getIdentifier() + ".enabled", check.isEnabled());
-            getChecksConfig().set("checks." + check.getType() + "." + check.getIdentifier() + ".bannable", check.isBannable());
-            getChecksConfig().set("checks." + check.getType() + "." + check.getIdentifier() + ".maxViolations", check.getMaxViolations());
-            getChecksConfig().set("checks." + check.getType() + "." + check.getIdentifier() + ".violationResetTime", check.getViolationResetTime());
-        }
-        for (Check check : Vulcan.checks) {
             if (!getChecksConfig().isConfigurationSection("checks." + check.getType() + "." + check.getIdentifier())) {
                 getChecksConfig().set("checks." + check.getType() + "." + check.getIdentifier() + ".enabled", check.isEnabled());
                 getChecksConfig().set("checks." + check.getType() + "." + check.getIdentifier() + ".bannable", check.isBannable());
