@@ -17,7 +17,7 @@ public class SpeedA extends Check {
     public void onMove(PlayerMoveEvent e) {
         Player p = e.getPlayer();
         if (e.getFrom().distance(e.getTo()) > .3) {
-            flag(this, p, null);
+            flag(p, null);
         }
     }
 }
