@@ -9,15 +9,15 @@ import org.bukkit.event.player.PlayerMoveEvent;
 
 public class SpeedA extends Check {
 
-    public SpeedA(Vulcan vulcan) {
-        super("SpeedA", "Speed (Type A)", CheckType.MOVEMENT, vulcan);
+    public SpeedA() {
+        super("SpeedA", "Speed (Type A)", CheckType.MOVEMENT, true, true, 8, 120000);
     }
 
     @EventHandler
     public void onMove(PlayerMoveEvent e) {
         Player p = e.getPlayer();
         if (e.getFrom().distance(e.getTo()) > .3) {
-            flag(this, p, null);
+            flag(p, null);
         }
     }
 }
