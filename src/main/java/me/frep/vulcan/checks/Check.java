@@ -24,16 +24,20 @@ public class Check implements Listener, PacketListener {
     private String name;
     private CheckType checkType;
     public static Vulcan vulcan;
-    private boolean enabled = true;
-    private boolean bannable = false;
-    private Integer maxViolations = 8;
-    private long violationResetTime = 120000L;
+    private boolean enabled;
+    private boolean bannable;
+    private Integer maxViolations;
+    private long violationResetTime;
 
     public Check(String identifier, String name, CheckType checkType, Vulcan vulcan) {
         this.identifier = identifier;
         this.name = name;
         this.checkType = checkType;
         this.vulcan = vulcan;
+        this.enabled = UtilConfig.getInstance().getChecksConfig().getBoolean("checks." + getType() + "." + getIdentifier() + ".enabled");
+        this.bannable = UtilConfig.getInstance().getChecksConfig().getBoolean("checks." + getType() + "." + getIdentifier() + ".bannable");
+        this.maxViolations =  UtilConfig.getInstance().getChecksConfig().getInt("checks." + getType() + "." + getIdentifier() + ".maxViolations");
+        this.violationResetTime =  UtilConfig.getInstance().getChecksConfig().getLong("checks." + getType() + "." + getIdentifier() + ".violationResetTime");
     }
 
     public Vulcan getVulcan() {
@@ -52,9 +56,7 @@ public class Check implements Listener, PacketListener {
         return this.checkType;
     }
 
-    public boolean isEnabled() {
-        return this.enabled;
-    }
+    public boolean isEnabled() { return this.enabled; }
 
     public boolean isBannable() {
         return this.bannable;
@@ -109,16 +111,16 @@ public class Check implements Listener, PacketListener {
         violationReset.put(p.getUniqueId(), map);
     }
 
-    public void flag(Check check, Player p, String info) {
-        if (p.hasPermission("vulcan.bypass") || !check.isEnabled()) return;
-        addViolation(check, p);
-        setViolationResetTime(check, p, UtilTime.timeNow() + check.getViolationResetTime());
-        int vl = getViolations(check, p);
+    public void flag(Player p, String info) {
+        if (p.hasPermission("vulcan.bypass") || !isEnabled()) return;
+        addViolation(this, p);
+        setViolationResetTime(this, p, UtilTime.timeNow() + this.getViolationResetTime());
+        int vl = getViolations(this, p);
         for (Player staff : Vulcan.alertsEnabled) {
             TextComponent alertMessage = new TextComponent(UtilColor.translate(UtilConfig.getInstance().getConfig().getString("alerts.message")
                     .replaceAll("%player%", p.getName())
                     .replaceAll("%vl%", Integer.toString(vl))
-                    .replaceAll("%check%", check.getName())
+                    .replaceAll("%check%", this.getName())
                     .replaceAll("%prefix%", UtilConfig.getInstance().getConfig().getString("prefix"))
                     .replaceAll("%tps%", Double.toString(UtilMath.trim(2, UtilLag.getTPS())))
                     .replaceAll("%ping%", Integer.toString(UtilLag.getPing(p)))));
@@ -146,12 +148,12 @@ public class Check implements Listener, PacketListener {
                    .replaceAll("%vl%", Integer.toString(vl))
                    .replaceAll("%tps%", Double.toString(UtilMath.trim(2, UtilLag.getTPS())))
                    .replaceAll("%ping%", Integer.toString(UtilLag.getPing(p))
-                   .replaceAll("%check%", check.getName())))).create()));
+                   .replaceAll("%check%", this.getName())))).create()));
             if (UtilConfig.getInstance().getConfig().getBoolean("alerts.show-in-console")) {
                 System.out.println(UtilConfig.getInstance().getConfig().getString("alerts.console-message")
                         .replaceAll("%player%", p.getName())
                         .replaceAll("%info%", info)
-                        .replaceAll("%check%", check.getName())
+                        .replaceAll("%check%", this.getName())
                         .replaceAll("%vl%", Integer.toString(vl))
                         .replaceAll("%tps%", Double.toString(UtilMath.trim(2, UtilLag.getTPS())))
                         .replaceAll("%ping%", Integer.toString(UtilLag.getPing(p))));

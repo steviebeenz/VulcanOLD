@@ -8,14 +8,12 @@ import io.github.retrooper.packetevents.packetwrappers.in.useentity.WrappedPacke
 import me.frep.vulcan.Vulcan;
 import me.frep.vulcan.checks.Check;
 import me.frep.vulcan.checks.CheckType;
-import me.frep.vulcan.utilities.UtilConfig;
 import org.bukkit.entity.Player;
 
 public class ReachA extends Check {
 
     public ReachA(Vulcan vulcan) {
         super("ReachA", "Reach (Type A)", CheckType.COMBAT, vulcan);
-        setEnabled(UtilConfig.getInstance().getConfig().getBoolean("checks." + getType() + "." + getIdentifier() + ".enabled"));
     }
 
     @PacketHandler
@@ -27,7 +25,7 @@ public class ReachA extends Check {
             Player victim = (Player) packet.getEntity();
             double distance = damager.getLocation().distance(victim.getLocation());
             if (distance > 5) {
-                flag(this, damager, "reach: " + distance);
+                flag(damager, "reach: " + distance);
             }
         }
     }
