@@ -63,7 +63,6 @@ public class UtilConfig {
                 getChecksConfig().set("checks." + check.getType() + "." + check.getIdentifier() + ".enabled", check.isEnabled());
                 getChecksConfig().set("checks." + check.getType() + "." + check.getIdentifier() + ".bannable", check.isBannable());
                 getChecksConfig().set("checks." + check.getType() + "." + check.getIdentifier() + ".maxViolations", check.getMaxViolations());
-                getChecksConfig().set("checks." + check.getType() + "." + check.getIdentifier() + ".violationResetTime", check.getViolationResetTime());
                 saveChecksConfig();
             }
         }

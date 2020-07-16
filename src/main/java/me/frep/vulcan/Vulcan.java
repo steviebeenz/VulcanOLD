@@ -3,9 +3,14 @@ package me.frep.vulcan;
 import io.github.retrooper.packetevents.PacketEvents;
 import io.github.retrooper.packetevents.event.manager.EventManager;
 import me.frep.vulcan.checks.Check;
+import me.frep.vulcan.checks.combat.killaura.KillAuraA;
 import me.frep.vulcan.checks.combat.reach.ReachA;
 import me.frep.vulcan.checks.movement.speed.SpeedA;
+import me.frep.vulcan.checks.player.badpackets.BadPacketsA;
+import me.frep.vulcan.checks.player.badpackets.BadPacketsB;
 import me.frep.vulcan.commands.AlertsCommand;
+import me.frep.vulcan.data.DataManager;
+import me.frep.vulcan.data.events.DataEvents;
 import me.frep.vulcan.utilities.UtilConfig;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -20,6 +25,7 @@ public final class Vulcan extends JavaPlugin {
     public static Vulcan instance;
     public static List<Check> checks = new ArrayList<>();
     public static List<Player> alertsEnabled = new ArrayList<>();
+    private DataManager dataManager = new DataManager();
 
     @Override
     public void onEnable() {
@@ -30,6 +36,8 @@ public final class Vulcan extends JavaPlugin {
         UtilConfig.getInstance().generateChecksConfig();
         registerCommands();
         enableAlerts();
+        registerChecks();
+        reloadPlayerData();
     }
 
     @Override
@@ -41,10 +49,19 @@ public final class Vulcan extends JavaPlugin {
     private void registerChecks() {
         PluginManager pm = Bukkit.getServer().getPluginManager();
         EventManager em = PacketEvents.getAPI().getEventManager();
-        checks.add(new SpeedA(this));
-        pm.registerEvents(new SpeedA(this), this);
-        checks.add(new ReachA(this));
-        em.registerListener(new ReachA(this));
+        checks.add(new SpeedA());
+        pm.registerEvents(new SpeedA(), this);
+        checks.add(new ReachA());
+        em.registerListener(new ReachA());
+        checks.add(new KillAuraA());
+        em.registerListener(new KillAuraA());
+        checks.add(new BadPacketsA());
+        em.registerListener(new BadPacketsA());
+        checks.add(new BadPacketsB());
+        em.registerListener(new BadPacketsB());
+
+        em.registerListener(new DataEvents());
+        pm.registerEvents(new DataEvents(), this);
     }
 
     private void registerCommands() {
@@ -57,5 +74,16 @@ public final class Vulcan extends JavaPlugin {
                 alertsEnabled.add(p);
             }
         }
+    }
+
+    private void reloadPlayerData() {
+        dataManager.getDataPlayers().clear();
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            dataManager.createPlayerData(p);
+        }
+    }
+
+    public DataManager getDataManager() {
+        return dataManager;
     }
 }

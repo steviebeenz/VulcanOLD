@@ -19,4 +19,16 @@ public class UtilBlock {
         }
         return blocks;
     }
+
+    public static boolean isFence(Block b) {
+        return b.getType().toString().contains("FENCE)");
+    }
+
+    public static boolean isStair(Block b) {
+        return b.getType().toString().contains("STAIR");
+    }
+
+    public static boolean isSlab(Block b) {
+        return b.getType().toString().contains("SLAB") || b.getType().toString().contains("STEP");
+    }
 }

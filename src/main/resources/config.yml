@@ -11,3 +11,12 @@ alerts:
   toggled-off-message: '%prefix% &7Vulcan alerts &cdisabled&7!'
   show-in-console: true
   console-message: "[Vulcan] %player% failed %check% [VL: %vl%] [Ping: %ping%] [TPS: %tps%]"
+punishments:
+  message:
+  - "%prefix% &c%player% &7was banned for &b%check% &7[VL: &c%vl%&7]"
+  commands:
+  - "ban %player% &c[Vulcan] Unfair Advantage"
+  broadcast:
+  - "&7&m---»--*-------------------------------------*--«---"
+  - "&cVulcan &7has detected &c%player% &7to be cheating and has removed them from the network."
+  - "&7&m---»--*-------------------------------------*--«---"

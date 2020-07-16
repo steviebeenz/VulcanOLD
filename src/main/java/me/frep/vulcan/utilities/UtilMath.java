@@ -1,5 +1,7 @@
 package me.frep.vulcan.utilities;
 
+import org.bukkit.Location;
+
 import java.text.DecimalFormat;
 
 public class UtilMath {
@@ -11,5 +13,11 @@ public class UtilMath {
         }
         DecimalFormat twoDForm = new DecimalFormat(format);
         return Double.parseDouble(twoDForm.format(d).replaceAll(",", "."));
+    }
+
+    public static double getHorizontalDistance(Location one, Location two) {
+        final double x = Math.abs(Math.abs(one.getX()) - Math.abs(two.getX()));
+        final double z = Math.abs(Math.abs(one.getZ()) - Math.abs(two.getZ()));
+        return Math.sqrt(x * x + z * z);
     }
 }

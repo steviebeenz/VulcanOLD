@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 public class ReachA extends Check {
 
     public ReachA() {
-        super("ReachA", "Reach (Type A)", CheckType.COMBAT, true, true, 8, 120000);
+        super("ReachA", "Reach (Type A)", CheckType.COMBAT, true, true, 8);
     }
 
     @PacketHandler
@@ -20,12 +20,6 @@ public class ReachA extends Check {
         if (e.getPacketId() == PacketType.Client.USE_ENTITY) {
             WrappedPacketInUseEntity packet = new WrappedPacketInUseEntity(e.getNMSPacket());
             if (!(packet.getEntity() instanceof Player || !packet.getAction().equals(EntityUseAction.ATTACK))) return;
-            Player damager = e.getPlayer();
-            Player victim = (Player) packet.getEntity();
-            double distance = damager.getLocation().distance(victim.getLocation());
-            if (distance > 5) {
-                flag(damager, "reach: " + distance);
-            }
         }
     }
 }
