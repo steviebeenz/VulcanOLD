@@ -1,4 +1,4 @@
-package me.frep.vulcan.checks.combat.killaura;
+package me.frep.vulcan.checks.player.badpackets;
 
 import io.github.retrooper.packetevents.annotations.PacketHandler;
 import io.github.retrooper.packetevents.enums.minecraft.EntityUseAction;
@@ -8,32 +8,36 @@ import io.github.retrooper.packetevents.packetwrappers.in.useentity.WrappedPacke
 import me.frep.vulcan.checks.Check;
 import me.frep.vulcan.checks.CheckType;
 import me.frep.vulcan.data.PlayerData;
-import me.frep.vulcan.utilities.UtilLag;
-import me.frep.vulcan.utilities.UtilTime;
 import org.bukkit.entity.Player;
 
-public class KillAuraA extends Check {
+public class BadPacketsD extends Check {
 
-    public KillAuraA() {
-        super("KillAuraA", "Kill Aura (Type A)", CheckType.COMBAT, true, false, 8);
+    public BadPacketsD() {
+        super("BadPacketsD", "Bad Packets (Type D)", CheckType.PLAYER, true, true, 2);
     }
 
     @PacketHandler
-    public void onPacketReceive(PacketReceiveEvent e) {
+    public void onReceive(PacketReceiveEvent e) {
         Player p = e.getPlayer();
         PlayerData data = getDataManager().getPlayerData(p);
+        if (e.getPacketId() == PacketType.Client.ARM_ANIMATION) {
+            data.badPacketsDHasSwung = true;
+        }
         if (e.getPacketId() == PacketType.Client.USE_ENTITY) {
             WrappedPacketInUseEntity packet = new WrappedPacketInUseEntity(e.getNMSPacket());
             if (!packet.getAction().equals(EntityUseAction.ATTACK)) return;
-            long delta = UtilTime.timeNow() - data.lastMovePacket;
-            if (delta < 5 && UtilLag.getPing(p) < 400) data.killAuraAVerbose++;
-            else {
-                if (data.killAuraAVerbose > 0) data.killAuraAVerbose--;
+            if (!data.badPacketsDHasSwung) {
+                data.badPacketsDStreak++;
+            } else {
+                if (data.badPacketsDStreak > 0) data.badPacketsDStreak--;
             }
-            if (data.killAuraAVerbose > 5) {
+            if (data.badPacketsDStreak > 2) {
                 flag(p, null);
-                data.killAuraAVerbose = 0;
+                data.badPacketsDStreak = 0;
             }
+        }
+        if (PacketType.Client.Util.isInstanceOfFlying(e.getPacketId())) {
+            data.badPacketsDHasSwung = false;
         }
     }
 }

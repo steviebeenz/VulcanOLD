@@ -12,6 +12,7 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -101,9 +102,19 @@ public class Check implements Listener, PacketListener {
     }
 
     public void flag(Player p, String info) {
-        if (p.hasPermission("vulcan.bypass") || !isEnabled() || bannedPlayers.containsKey(p.getUniqueId())) return;
+        if (p.hasPermission("vulcan.bypass") || p.getAllowFlight()
+                || p.getGameMode().equals(GameMode.CREATIVE )||!isEnabled() || bannedPlayers.containsKey(p.getUniqueId())) return;
         addViolation(this, p);
         int vl = getViolations(this, p);
+        if (getConfig().getBoolean("alerts.show-in-console")) {
+            System.out.println(getConfig().getString("alerts.console-message")
+                    .replaceAll("%player%", p.getName())
+                    .replaceAll("%info%", info)
+                    .replaceAll("%check%", this.getName())
+                    .replaceAll("%vl%", Integer.toString(vl))
+                    .replaceAll("%tps%", Double.toString(UtilMath.trim(2, UtilLag.getTPS())))
+                    .replaceAll("%ping%", Integer.toString(UtilLag.getPing(p))));
+        }
         for (Player staff : Vulcan.alertsEnabled) {
             TextComponent alertMessage = new TextComponent(UtilColor.translate(getConfig().getString("alerts.message")
                     .replaceAll("%player%", p.getName())
@@ -137,15 +148,6 @@ public class Check implements Listener, PacketListener {
                     .replaceAll("%tps%", Double.toString(UtilMath.trim(2, UtilLag.getTPS())))
                     .replaceAll("%ping%", Integer.toString(UtilLag.getPing(p))
                             .replaceAll("%check%", this.getName())))).create()));
-            if (getConfig().getBoolean("alerts.show-in-console")) {
-                System.out.println(getConfig().getString("alerts.console-message")
-                        .replaceAll("%player%", p.getName())
-                        .replaceAll("%info%", info)
-                        .replaceAll("%check%", this.getName())
-                        .replaceAll("%vl%", Integer.toString(vl))
-                        .replaceAll("%tps%", Double.toString(UtilMath.trim(2, UtilLag.getTPS())))
-                        .replaceAll("%ping%", Integer.toString(UtilLag.getPing(p))));
-            }
             staff.spigot().sendMessage(alertMessage);
         }
         if (vl > this.getMaxViolations() - 1 && this.isBannable()) {

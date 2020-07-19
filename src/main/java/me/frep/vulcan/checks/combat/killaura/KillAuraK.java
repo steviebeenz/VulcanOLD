@@ -8,32 +8,38 @@ import io.github.retrooper.packetevents.packetwrappers.in.useentity.WrappedPacke
 import me.frep.vulcan.checks.Check;
 import me.frep.vulcan.checks.CheckType;
 import me.frep.vulcan.data.PlayerData;
-import me.frep.vulcan.utilities.UtilLag;
-import me.frep.vulcan.utilities.UtilTime;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
-public class KillAuraA extends Check {
+public class KillAuraK extends Check {
 
-    public KillAuraA() {
-        super("KillAuraA", "Kill Aura (Type A)", CheckType.COMBAT, true, false, 8);
+    public KillAuraK() {
+        super("KillAuraK", "Kill Aura (Type K)", CheckType.COMBAT, true, false, 8);
     }
 
     @PacketHandler
-    public void onPacketReceive(PacketReceiveEvent e) {
+    public void onReceive(PacketReceiveEvent e) {
         Player p = e.getPlayer();
         PlayerData data = getDataManager().getPlayerData(p);
         if (e.getPacketId() == PacketType.Client.USE_ENTITY) {
             WrappedPacketInUseEntity packet = new WrappedPacketInUseEntity(e.getNMSPacket());
             if (!packet.getAction().equals(EntityUseAction.ATTACK)) return;
-            long delta = UtilTime.timeNow() - data.lastMovePacket;
-            if (delta < 5 && UtilLag.getPing(p) < 400) data.killAuraAVerbose++;
+            double maxSpeed = .28;
+            for (PotionEffect effect : p.getActivePotionEffects()) if (effect.getType().equals(PotionEffectType.SPEED)) maxSpeed += (effect.getAmplifier() + 1) * .07;
+            if (data.isNearIce(2)) maxSpeed += .08;
+            if (p.getWalkSpeed() > .21) maxSpeed += p.getWalkSpeed() / .25;
+            if (data.lastGroundSpeed > maxSpeed && data.isOnGround) data.killAuraKStreak++;
             else {
-                if (data.killAuraAVerbose > 0) data.killAuraAVerbose--;
+                if (data.killAuraKStreak > 0 || !data.isSprinting || data.airTicks > 0) data.killAuraKStreak--;
             }
-            if (data.killAuraAVerbose > 5) {
+            if (data.killAuraKStreak > 4) {
                 flag(p, null);
-                data.killAuraAVerbose = 0;
+                data.killAuraKStreak = 0;
             }
+        }
+        if (e.getPacketId() == PacketType.Client.FLYING) {
+            data.killAuraKStreak = 0;
         }
     }
 }

@@ -8,32 +8,38 @@ import io.github.retrooper.packetevents.packetwrappers.in.useentity.WrappedPacke
 import me.frep.vulcan.checks.Check;
 import me.frep.vulcan.checks.CheckType;
 import me.frep.vulcan.data.PlayerData;
-import me.frep.vulcan.utilities.UtilLag;
 import me.frep.vulcan.utilities.UtilTime;
 import org.bukkit.entity.Player;
 
-public class KillAuraA extends Check {
+public class KillAuraN extends Check {
 
-    public KillAuraA() {
-        super("KillAuraA", "Kill Aura (Type A)", CheckType.COMBAT, true, false, 8);
+    public KillAuraN() {
+        super("KillAuraN", "Kill Aura (Type N)", CheckType.COMBAT, true, false, 8);
     }
 
     @PacketHandler
-    public void onPacketReceive(PacketReceiveEvent e) {
+    public void onReceive(PacketReceiveEvent e) {
         Player p = e.getPlayer();
         PlayerData data = getDataManager().getPlayerData(p);
+        if (e.getPacketId() == PacketType.Client.WINDOW_CLICK) {
+            data.killAuraNLastClick = UtilTime.timeNow();
+        }
         if (e.getPacketId() == PacketType.Client.USE_ENTITY) {
             WrappedPacketInUseEntity packet = new WrappedPacketInUseEntity(e.getNMSPacket());
             if (!packet.getAction().equals(EntityUseAction.ATTACK)) return;
-            long delta = UtilTime.timeNow() - data.lastMovePacket;
-            if (delta < 5 && UtilLag.getPing(p) < 400) data.killAuraAVerbose++;
+            double delta = Math.abs(UtilTime.timeNow() - data.killAuraNLastClick);
+            if (delta == 0) data.killAuraNVerbose++;
             else {
-                if (data.killAuraAVerbose > 0) data.killAuraAVerbose--;
+                if (data.killAuraNVerbose > 0) data.killAuraNVerbose --;
             }
-            if (data.killAuraAVerbose > 5) {
+            if (data.killAuraNVerbose > 3) {
+                data.killAuraNVerbose = 0;
                 flag(p, null);
-                data.killAuraAVerbose = 0;
             }
+        }
+        if (e.getPacketId() == PacketType.Client.FLYING) {
+            data.killAuraNLastClick = 0;
+            data.killAuraNVerbose = 0;
         }
     }
 }

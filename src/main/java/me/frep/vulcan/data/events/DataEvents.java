@@ -13,11 +13,14 @@ import io.github.retrooper.packetevents.packetwrappers.in.useentity.WrappedPacke
 import me.frep.vulcan.Vulcan;
 import me.frep.vulcan.checks.Check;
 import me.frep.vulcan.data.PlayerData;
+import me.frep.vulcan.utilities.UtilLag;
 import me.frep.vulcan.utilities.UtilMath;
 import me.frep.vulcan.utilities.UtilTime;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -30,6 +33,8 @@ public class DataEvents implements Listener, PacketListener {
         Player p = e.getPlayer();
         if (p.hasPermission("vulcan.alerts")) Vulcan.instance.alertsEnabled.add(p);
         Vulcan.instance.getDataManager().createPlayerData(p);
+        PlayerData data = Vulcan.instance.getDataManager().getPlayerData(p);
+        data.lastJoin = UtilTime.timeNow();
     }
 
     @EventHandler
@@ -55,6 +60,20 @@ public class DataEvents implements Listener, PacketListener {
         if (!data.isOnGround) data.lastGroundSpeed = 0;
     }
 
+    @EventHandler
+    public void onInventoryOpen(InventoryOpenEvent e) {
+        Player p = (Player)e.getPlayer();
+        PlayerData data = Vulcan.instance.getDataManager().getPlayerData(p);
+        data.isInGUI = true;
+    }
+
+    @EventHandler
+    public void onInventoryClose(InventoryCloseEvent e) {
+        Player p = (Player)e.getPlayer();
+        PlayerData data = Vulcan.instance.getDataManager().getPlayerData(p);
+        data.isInGUI = false;
+    }
+
     @PacketHandler
     public void onPacketReceive(PacketReceiveEvent e) {
         Player p = e.getPlayer();
@@ -77,6 +96,9 @@ public class DataEvents implements Listener, PacketListener {
                     break;
             }
         }
+        if (e.getPacketId() == PacketType.Client.BLOCK_PLACE) {
+            data.isPlacing = true;
+        }
         if (e.getPacketId() == PacketType.Client.BLOCK_DIG) {
             WrappedPacketInBlockDig packet = new WrappedPacketInBlockDig(e.getNMSPacket());
             if (packet.getDigType().equals(PlayerDigType.START_DESTROY_BLOCK)) {
@@ -90,32 +112,29 @@ public class DataEvents implements Listener, PacketListener {
             if (packet.getAction() != EntityUseAction.ATTACK) return;
             data.lastAttackPacket = UtilTime.timeNow();
         }
-        if (e.getPacketId() == PacketType.Client.FLYING
-                || e.getPacketId() == PacketType.Client.POSITION
-                || e.getPacketId() == PacketType.Client.LOOK
-                || e.getPacketId() == PacketType.Client.POSITION_LOOK) {
-            WrappedPacketInFlying flyingPacket = new WrappedPacketInFlying(e.getNMSPacket());
-            WrappedPacketInFlying.WrappedPacketInPosition positionPacket = new WrappedPacketInFlying.WrappedPacketInPosition(e.getNMSPacket());
-            WrappedPacketInFlying.WrappedPacketInLook lookPacket = new WrappedPacketInFlying.WrappedPacketInLook(e.getNMSPacket());
-            WrappedPacketInFlying.WrappedPacketInPosition_Look positionLookPacket = new WrappedPacketInFlying.WrappedPacketInPosition_Look(e.getNMSPacket());
-            if (flyingPacket.isOnGround() || positionPacket.isOnGround() || lookPacket.isOnGround() || positionLookPacket.isOnGround()) {
+        if (PacketType.Client.Util.isInstanceOfFlying(e.getPacketId())) {
+            WrappedPacketInFlying packet = new WrappedPacketInFlying(e.getNMSPacket());
+            data.isPlacing = false;
+            data.lastPing = UtilLag.getPing(p);
+            data.lastMovePacket = UtilTime.timeNow();
+            if (packet.isOnGround()) {
                 data.isOnGround = true;
+                data.lastOnGround = UtilTime.timeNow();
                 data.groundTicks++;
                 data.airTicks = 0;
+                if (data.groundTicks > 5000) data.groundTicks = 0;
             } else {
-                if (!flyingPacket.isOnGround() || !positionPacket.isOnGround() || !lookPacket.isOnGround() || !positionLookPacket.isOnGround()) {
+                if (!packet.isOnGround()) {
                     data.isOnGround = false;
+                    data.lastInAir = UtilTime.timeNow();
                     data.groundTicks = 0;
                     data.airTicks++;
+                    if (data.airTicks > 5000) data.airTicks = 0;
                 }
             }
         }
-        if (e.getPacketId() == PacketType.Client.POSITION  || e.getPacketId() == PacketType.Client.LOOK
-                || e.getPacketId() == PacketType.Client.POSITION_LOOK) {
-            data.isMoving = true;
-        }
-        if (e.getPacketId() == PacketType.Client.FLYING) {
-            data.isMoving = false;
+        if (e.getPacketId() == PacketType.Client.ARM_ANIMATION) {
+            data.lastSwingPacket = UtilTime.timeNow();
         }
     }
 }

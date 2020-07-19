@@ -8,31 +8,33 @@ import io.github.retrooper.packetevents.packetwrappers.in.useentity.WrappedPacke
 import me.frep.vulcan.checks.Check;
 import me.frep.vulcan.checks.CheckType;
 import me.frep.vulcan.data.PlayerData;
-import me.frep.vulcan.utilities.UtilLag;
-import me.frep.vulcan.utilities.UtilTime;
+import me.frep.vulcan.utilities.UtilCheck;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
-public class KillAuraA extends Check {
+public class KillAuraO extends Check {
 
-    public KillAuraA() {
-        super("KillAuraA", "Kill Aura (Type A)", CheckType.COMBAT, true, false, 8);
+    public KillAuraO() {
+        super("KillAuraO", "Kill Aura (Type O)", CheckType.COMBAT, true, false, 8);
     }
 
     @PacketHandler
-    public void onPacketReceive(PacketReceiveEvent e) {
+    public void onReceive(PacketReceiveEvent e) {
         Player p = e.getPlayer();
         PlayerData data = getDataManager().getPlayerData(p);
         if (e.getPacketId() == PacketType.Client.USE_ENTITY) {
             WrappedPacketInUseEntity packet = new WrappedPacketInUseEntity(e.getNMSPacket());
             if (!packet.getAction().equals(EntityUseAction.ATTACK)) return;
-            long delta = UtilTime.timeNow() - data.lastMovePacket;
-            if (delta < 5 && UtilLag.getPing(p) < 400) data.killAuraAVerbose++;
+            double offset = Math.abs(UtilCheck.getOffset(p.getLocation(), p.getEyeHeight(), (LivingEntity)packet.getEntity()));
+            double maxOffset = 200;
+            maxOffset += data.lastPing / .5;
+            if (offset > maxOffset) data.killAuraOVerbose++;
             else {
-                if (data.killAuraAVerbose > 0) data.killAuraAVerbose--;
+                if (data.killAuraOVerbose > 0) data.killAuraOVerbose--;
             }
-            if (data.killAuraAVerbose > 5) {
-                flag(p, null);
-                data.killAuraAVerbose = 0;
+            if (data.killAuraOVerbose > 4) {
+                data.killAuraOVerbose = 0;
+                flag(p, offset + " > " + maxOffset);
             }
         }
     }

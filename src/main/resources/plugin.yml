@@ -8,3 +8,6 @@ commands:
   alerts:
     description: Enable/disable Vulcan alert messages.
     usage: /<command>
+  vulcan:
+    description: Vulcan's main command.
+    usage: /<command>

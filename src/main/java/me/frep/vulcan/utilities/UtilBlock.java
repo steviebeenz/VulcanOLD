@@ -20,6 +20,10 @@ public class UtilBlock {
         return blocks;
     }
 
+    public static boolean isWeb(Block b) {
+        return b.getType().toString().contains("WEB");
+    }
+
     public static boolean isFence(Block b) {
         return b.getType().toString().contains("FENCE)");
     }
@@ -30,5 +34,13 @@ public class UtilBlock {
 
     public static boolean isSlab(Block b) {
         return b.getType().toString().contains("SLAB") || b.getType().toString().contains("STEP");
+    }
+
+    public static boolean isSlime(Block b) {
+        return b.getType().toString().contains("SLIME");
+    }
+
+    public static boolean isIce(Block b) {
+        return b.getType().toString().contains("ICE");
     }
 }

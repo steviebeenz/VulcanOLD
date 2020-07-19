@@ -8,32 +8,28 @@ import io.github.retrooper.packetevents.packetwrappers.in.useentity.WrappedPacke
 import me.frep.vulcan.checks.Check;
 import me.frep.vulcan.checks.CheckType;
 import me.frep.vulcan.data.PlayerData;
-import me.frep.vulcan.utilities.UtilLag;
-import me.frep.vulcan.utilities.UtilTime;
 import org.bukkit.entity.Player;
 
-public class KillAuraA extends Check {
+public class KillAuraH extends Check {
 
-    public KillAuraA() {
-        super("KillAuraA", "Kill Aura (Type A)", CheckType.COMBAT, true, false, 8);
+    public KillAuraH() {
+        super("KillAuraH", "Kill Aura (Type H)", CheckType.COMBAT, true, false, 8);
     }
 
     @PacketHandler
-    public void onPacketReceive(PacketReceiveEvent e) {
+    public void onReceive(PacketReceiveEvent e) {
         Player p = e.getPlayer();
         PlayerData data = getDataManager().getPlayerData(p);
+        if (e.getPacketId() == PacketType.Client.CLOSE_WINDOW) {
+            data.killAuraHClosedWindow = true;
+        }
+        if (PacketType.Client.Util.isInstanceOfFlying(e.getPacketId())) {
+            data.killAuraHClosedWindow = false;
+        }
         if (e.getPacketId() == PacketType.Client.USE_ENTITY) {
             WrappedPacketInUseEntity packet = new WrappedPacketInUseEntity(e.getNMSPacket());
             if (!packet.getAction().equals(EntityUseAction.ATTACK)) return;
-            long delta = UtilTime.timeNow() - data.lastMovePacket;
-            if (delta < 5 && UtilLag.getPing(p) < 400) data.killAuraAVerbose++;
-            else {
-                if (data.killAuraAVerbose > 0) data.killAuraAVerbose--;
-            }
-            if (data.killAuraAVerbose > 5) {
-                flag(p, null);
-                data.killAuraAVerbose = 0;
-            }
+            if (data.killAuraHClosedWindow) flag(p, null);
         }
     }
 }
