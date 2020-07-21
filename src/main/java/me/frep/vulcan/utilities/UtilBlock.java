@@ -43,4 +43,8 @@ public class UtilBlock {
     public static boolean isIce(Block b) {
         return b.getType().toString().contains("ICE");
     }
+
+    public static boolean isClimbable(Block b) {
+        return b.getType().toString().contains("VINE") || b.getType().toString().contains("LADDER");
+    }
 }

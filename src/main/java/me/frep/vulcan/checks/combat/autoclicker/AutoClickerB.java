@@ -1,4 +1,4 @@
-package me.frep.vulcan.checks.combat.killaura;
+package me.frep.vulcan.checks.combat.autoclicker;
 
 import io.github.retrooper.packetevents.annotations.PacketHandler;
 import io.github.retrooper.packetevents.enums.minecraft.EntityUseAction;
@@ -8,32 +8,29 @@ import io.github.retrooper.packetevents.packetwrappers.in.useentity.WrappedPacke
 import me.frep.vulcan.checks.Check;
 import me.frep.vulcan.checks.CheckType;
 import me.frep.vulcan.data.PlayerData;
-import me.frep.vulcan.utilities.UtilLag;
 import me.frep.vulcan.utilities.UtilTime;
 import org.bukkit.entity.Player;
 
-public class KillAuraA extends Check {
+public class AutoClickerB extends Check {
 
-    public KillAuraA() {
-        super("KillAuraA", "Kill Aura (Type A)", CheckType.COMBAT, true, false, 8);
+    public AutoClickerB() {
+        super("AutoClickerB", "Auto Clicker (Type B)", CheckType.COMBAT, true, false, 2);
     }
 
     @PacketHandler
-    public void onPacketReceive(PacketReceiveEvent e) {
+    public void onReceive(PacketReceiveEvent e) {
         Player p = e.getPlayer();
         PlayerData data = getDataManager().getPlayerData(p);
         if (e.getPacketId() == PacketType.Client.USE_ENTITY) {
             WrappedPacketInUseEntity packet = new WrappedPacketInUseEntity(e.getNMSPacket());
             if (!packet.getAction().equals(EntityUseAction.ATTACK)) return;
-            long delta = UtilTime.timeNow() - data.lastMovePacket;
-            if (delta < 5 && UtilLag.getPing(p) < 400 && UtilLag.getTPS() > 19.5) data.killAuraAVerbose++;
-            else {
-                if (data.killAuraAVerbose > 0) data.killAuraAVerbose--;
-            }
-            if (data.killAuraAVerbose > 5) {
+            long delay = UtilTime.timeNow() - data.autoClickerBLastAttack;
+            if (delay == 0) data.autoClickerBVerbose++;
+            if (data.autoClickerBVerbose > 3) {
                 flag(p, null);
-                data.killAuraAVerbose = 0;
+                data.autoClickerBVerbose = 0;
             }
+            data.autoClickerBLastAttack = UtilTime.timeNow();
         }
     }
 }

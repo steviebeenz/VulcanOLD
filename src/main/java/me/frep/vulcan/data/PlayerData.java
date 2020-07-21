@@ -15,127 +15,45 @@ public class PlayerData {
 
     public Player player;
 
-    public int groundTicks, airTicks, lastPing;
+    public int groundTicks, airTicks, lastPing, lastCPS, badPacketsEVerbose, badPacketsFStreak, badPacketsGVerbose, badPacketsDStreak,
+            badPacketsCStreak, badPacketsHLastAirTicks, badPacketsHVerbose, criticalsAVerbose, criticalsBVerbose, criticalsDVerbose,
+            killAuraAVerbose, killAuraBVerbose, killAuraCVerbose, badPacketsIVerbose, killAuraDVerbose, killAuraEVerbose, killAuraGVerbose,
+            killAuraKStreak, killAuraLStreak, killAuraMVerbose, killAuraOVerbose, killAuraRVerbose, killAuraTVerbose, aimPatternAVerbose,
+            aimPatternBVerbose, aimPatternCVerbose, aimPatternDVerbose, aimPatternEVerbose, autoClickerASwings, reachAVerbose, reachBVerbose, reachCVerbose, killAuraNVerbose,
+            autoClickerBVerbose, autoClickerDSwings, autoClickerESwings, killAuraUVerbose, autoClickerFVerbose;
 
-    public double lastGroundSpeed;
+    public double lastGroundSpeed, lastAirSpeed, badPacketsILastY, badPacketsILastDeltaY, badPacketsHLastY, killAuraPLastSpeed, killAuraRLastSpeed;
 
-    public long lastWorldChange, lastAttackPacket, lastSwingPacket, lastMovePacket, lastJoin, lastOnGround, lastInAir;
+    public long lastWorldChange, lastAttackPacket, lastSwingPacket, lastMovePacket, lastJoin, lastOnGround, lastInAir, lastTeleport, killAuraSLastAttack,
+            reachALastVerbose, reachBLastVerbose, reachCLastVerbose, autoClickerBLastAttack, autoClickerCLastSwing, autoClickerFLastSwing;
 
-    public boolean isSprinting, isSneaking, isDigging, isOnGround, isPlacing, isInGUI;
+    public boolean badPacketsAClientSent, badPacketsAServerSent, badPacketsDHasSwung, killAuraFInventoryOpen, killAuraGSentRelease,
+            killAuraHClosedWindow, killAuraJSentAction, isSprinting, isSneaking, isDigging, isOnGround, isPlacing, isInGUI, isBelowBlock;
 
-    /* Reach (Type A) */
-    public int reachAVerbose;
-    public long reachALastVerbose;
-    /* Reach (Type A) */
+    public float badPacketsGLastYaw, badPacketsGLastPitch, killAuraCLastPitch, killAuraCLastYaw, killAuraELastPitch, killAuraELastYaw,
+            killAuraMLastPitch, killAuraMLastYaw, killAuraNLastClick, killAuraPLastYaw, killAuraPLastPitch, killAuraRLastPitch, killAuraRLastYaw,
+            aimPatternALastYaw, aimPatternALastPitch, aimPatternALastDeltaYaw, aimPatternALastDeltaPitch, aimPatternBLastYaw, aimPatternBLastPitch,
+            aimPatternBLastDeltaYaw, aimPatternBLastDeltaPitch, aimPatternCLastYaw, aimPatternCLastPitch, aimPatternCLastDeltaYaw, aimPatternCLastDeltaPitch,
+            aimPatternDLastYaw, aimPatternDLastPitch, aimPatternDLastDeltaYaw, aimPatternDLastDeltaPitch, aimPatternELastYaw, aimPatternELastPitch,
+            aimPatternELastDeltaYaw, aimPatternELastDeltaPitch, aimPatternELastDeltaDeltaPitch, aimPatternELastDeltaDeltaYaw, killAuraULastPitch,
+            killAuraULastYaw;
 
-    /* Reach (Type B) */
-    public int reachBVerbose;
-    public long reachBLastVerbose;
-    /* Reach (Type B) */
-
-    /* Bad Packets (Type A) */
-    public boolean badPacketsAClientSent, badPacketsAServerSent;
-    /* Bad Packets (Type A) */
-
-    /* Bad Packets (Type C) */
-    public int badPacketsCStreak;
-    /* Bad Packets (Type C) */
-
-    /* Bad Packets (Type D) */
-    public int badPacketsDStreak;
-    public boolean badPacketsDHasSwung;
-    /* Bad Packets (Type D) */
-
-    /* Bad Packets (Type E) */
-    public int badPacketsEVerbose;
-    /* Bad Packets (Type E) */
-
-    /* Bad Packets (Type F) */
-    public int badPacketsFStreak;
-    /* Bad Packets (Type F) */
-
-    /* Kill Aura (Type A) */
-    public int killAuraAVerbose;
-    /* Kill Aura (Type A) */
-
-    /* Kill Aura (Type B) */
-    public int killAuraBVerbose;
-    /* Kill Aura (Type B) */
-
-    /* Kill Aura (Type C) */
-    public int killAuraCVerbose;
-    public float killAuraCLastPitch, killAuraCLastYaw;
-    /* Kill Aura (Type C) */
-
-    /* Kill Aura (Type D) */
-    public int killAuraDVerbose;
-    /* Kill Aura (Type D) */
-
-    /* Kill Aura (Type E) */
-    public int killAuraEVerbose;
-    public float killAuraELastPitch, killAuraELastYaw;
-    /* Kill Aura (Type E) */
-
-    /* Kill Aura (Type F) */
-    public boolean killAuraFInventoryOpen;
-    /* Kill Aura (Type F) */
-
-    /* Kill Aura (Type G) */
-    public boolean killAuraGSentRelease;
-    public int killAuraGVerbose;
-    /* Kill Aura (Type G) */
-
-    /* Kill Aura (Type H) */
-    public boolean killAuraHClosedWindow;
-    /* Kill Aura (Type H) */
-
-    /* Kill Aura (Type J) */
-    public boolean killAuraJSentAction;
-    /* Kill Aura (Type J) */
-
-    /* Kill Aura (Type K) */
-    public int killAuraKStreak;
-    /* Kill Aura (Type K) */
-
-    /* Kill Aura (Type L) */
-    public int killAuraLStreak;
-    /* Kill Aura (Type L) */
-
-    /* Kill Aura (Type M) */
-    public int killAuraMVerbose;
-    public float killAuraMLastPitch, killAuraMLastYaw;
-    /* Kill Aura (Type M) */
-
-    /* Kill Aura (Type N) */
-    public float killAuraNLastClick, killAuraNVerbose;
-    /* Kill Aura (Type N) */
-
-    /* Kill Aura (Type O) */
-    public int killAuraOVerbose;
-    /* Kill Aura (Type O) */
-
-    /* Kill Aura (Type P) */
-    public float killAuraPLastYaw, killAuraPLastPitch;
-    public double killAuraPLastSpeed;
-    /* Kill Aura (Type P) */
-
-    /* Kill Aura (Type Q) */
-    public int killAuraQVerbose;
     public List<Float> killAuraQAngles = new ArrayList<>();
     public List<Double> killAuraQRange = new ArrayList<>();
-    /* Kill Aura (Type Q) */
-
-    /* Kill Aura (Type R) */
-    public double killAuraRLastSpeed;
-    public int killAuraRVerbose;
-    public float killAuraRLastPitch, killAuraRLastYaw;
-    /* Kill Aura (Type R) */
-
-    /* Kill Aura (Type S) */
-    public long killAuraSLastAttack;
     public List<Long> killAuraSDelays = new ArrayList<>();
     public List<Long> killAuraSRanges = new ArrayList<>();
-    /* Kill Aura (Type S) */
+    public Map<Integer, Long> autoClickerACPS = new HashMap<>();
+    public Map<Integer, Long> autoClickerDCPS = new HashMap<>();
+    public Map<Integer, Long> autoClickerECPS = new HashMap<>();
+    public List<Integer> autoClickerDLastCPSs = new ArrayList<>();
+    public List<Integer> autoClickerELastCPSs = new ArrayList<>();
+    public List<Double> reachDReaches = new ArrayList<>();
+    public List<Double> reachEReaches = new ArrayList<>();
+    public List<Long> autoClickerCDelays = new ArrayList<>();
+    public List<Float> killAuraUDeltaPitches = new ArrayList<>();
+    public List<Float> killAuraUDeltaYaws = new ArrayList<>();
+    public List<Long> autoClickerFDelays = new ArrayList<>();
+    public List<Double> autoClickerFSkewness = new ArrayList<>();
 
     public boolean isNearWeb(int radius) {
         for (Block b : UtilBlock.getNearbyBlocks(player.getLocation(), radius)) {
@@ -182,6 +100,13 @@ public class PlayerData {
     public boolean isNearIce(int radius) {
         for (Block b: UtilBlock.getNearbyBlocks(player.getLocation(), radius)) {
             if (UtilBlock.isIce(b)) return true;
+        }
+        return false;
+    }
+
+    public boolean isNearClimbable(int radius) {
+        for (Block b: UtilBlock.getNearbyBlocks(player.getLocation(), radius)) {
+            if (UtilBlock.isClimbable(b)) return true;
         }
         return false;
     }

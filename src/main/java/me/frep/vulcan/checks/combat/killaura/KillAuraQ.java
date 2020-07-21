@@ -10,7 +10,6 @@ import me.frep.vulcan.checks.CheckType;
 import me.frep.vulcan.data.PlayerData;
 import me.frep.vulcan.utilities.UtilCheck;
 import me.frep.vulcan.utilities.UtilMath;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;

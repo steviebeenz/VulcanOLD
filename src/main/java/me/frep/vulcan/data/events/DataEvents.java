@@ -13,6 +13,7 @@ import io.github.retrooper.packetevents.packetwrappers.in.useentity.WrappedPacke
 import me.frep.vulcan.Vulcan;
 import me.frep.vulcan.checks.Check;
 import me.frep.vulcan.data.PlayerData;
+import me.frep.vulcan.utilities.UtilCheck;
 import me.frep.vulcan.utilities.UtilLag;
 import me.frep.vulcan.utilities.UtilMath;
 import me.frep.vulcan.utilities.UtilTime;
@@ -21,10 +22,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
-import org.bukkit.event.player.PlayerChangedWorldEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.*;
 
 public class DataEvents implements Listener, PacketListener {
 
@@ -52,12 +50,20 @@ public class DataEvents implements Listener, PacketListener {
     }
 
     @EventHandler
+    public void onTeleport(PlayerTeleportEvent e) {
+        Player p = e.getPlayer();
+        PlayerData data = Vulcan.instance.getDataManager().getPlayerData(p);
+        data.lastTeleport = UtilTime.timeNow();
+    }
+
+    @EventHandler
     public void onMove(PlayerMoveEvent e) {
         Player p = e.getPlayer();
         PlayerData data = Vulcan.instance.getDataManager().getPlayerData(p);
-        double groundSpeed = UtilMath.getHorizontalDistance(e.getFrom(), e.getTo());
+        double groundSpeed = UtilCheck.getHorizontalDistance(e.getFrom(), e.getTo());
+        double airSpeed = UtilCheck.getAirSpeed(e.getFrom(), e.getTo());
         if (data.isOnGround) data.lastGroundSpeed = groundSpeed;
-        if (!data.isOnGround) data.lastGroundSpeed = 0;
+        if (!data.isOnGround) data.lastAirSpeed = airSpeed;
     }
 
     @EventHandler
@@ -114,6 +120,8 @@ public class DataEvents implements Listener, PacketListener {
         }
         if (PacketType.Client.Util.isInstanceOfFlying(e.getPacketId())) {
             WrappedPacketInFlying packet = new WrappedPacketInFlying(e.getNMSPacket());
+            if (p.getEyeLocation().clone().add(0, .5, 0).getBlock().getType().isSolid()) data.isBelowBlock = true;
+            if (!p.getEyeLocation().clone().add(0, .5, 0).getBlock().getType().isSolid()) data.isBelowBlock = false;
             data.isPlacing = false;
             data.lastPing = UtilLag.getPing(p);
             data.lastMovePacket = UtilTime.timeNow();

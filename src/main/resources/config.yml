@@ -20,3 +20,5 @@ punishments:
   - "&7&m---»--*-------------------------------------*--«---"
   - "&cVulcan &7has detected &c%player% &7to be cheating and has removed them from the network."
   - "&7&m---»--*-------------------------------------*--«---"
+settings:
+  autoclickera-maxcps:

@@ -1,4 +1,4 @@
-package me.frep.vulcan.checks.combat.killaura;
+package me.frep.vulcan.checks.combat.criticals;
 
 import io.github.retrooper.packetevents.annotations.PacketHandler;
 import io.github.retrooper.packetevents.enums.minecraft.EntityUseAction;
@@ -8,14 +8,13 @@ import io.github.retrooper.packetevents.packetwrappers.in.useentity.WrappedPacke
 import me.frep.vulcan.checks.Check;
 import me.frep.vulcan.checks.CheckType;
 import me.frep.vulcan.data.PlayerData;
-import me.frep.vulcan.utilities.UtilLag;
-import me.frep.vulcan.utilities.UtilTime;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 
-public class KillAuraA extends Check {
+public class CriticalsD extends Check {
 
-    public KillAuraA() {
-        super("KillAuraA", "Kill Aura (Type A)", CheckType.COMBAT, true, false, 8);
+    public CriticalsD() {
+        super("CriticalsD", "Criticals (Type D)", CheckType.COMBAT, true, false, 8);
     }
 
     @PacketHandler
@@ -25,14 +24,15 @@ public class KillAuraA extends Check {
         if (e.getPacketId() == PacketType.Client.USE_ENTITY) {
             WrappedPacketInUseEntity packet = new WrappedPacketInUseEntity(e.getNMSPacket());
             if (!packet.getAction().equals(EntityUseAction.ATTACK)) return;
-            long delta = UtilTime.timeNow() - data.lastMovePacket;
-            if (delta < 5 && UtilLag.getPing(p) < 400 && UtilLag.getTPS() > 19.5) data.killAuraAVerbose++;
+            if (data.isNearSlab(2) || data.isBelowBlock) return;
+            if (!data.isOnGround && !p.isOnGround() && p.getLocation().getBlock().getRelative(BlockFace.DOWN).getType().isSolid()
+                    && data.airTicks > 50) data.criticalsDVerbose++;
             else {
-                if (data.killAuraAVerbose > 0) data.killAuraAVerbose--;
+                if (data.criticalsDVerbose > 0) data.criticalsDVerbose--;
             }
-            if (data.killAuraAVerbose > 5) {
+            if (data.criticalsDVerbose > 2) {
                 flag(p, null);
-                data.killAuraAVerbose = 0;
+                data.criticalsDVerbose = 0;
             }
         }
     }

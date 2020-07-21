@@ -10,7 +10,6 @@ import me.frep.vulcan.checks.CheckType;
 import me.frep.vulcan.data.PlayerData;
 import me.frep.vulcan.utilities.UtilMath;
 import me.frep.vulcan.utilities.UtilTime;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.Collections;

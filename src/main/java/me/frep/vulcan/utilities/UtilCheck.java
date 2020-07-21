@@ -38,7 +38,7 @@ public class UtilCheck {
         Vector playerRotation = new Vector(playerLoc.getYaw(), playerLoc.getPitch(), 0.0F);
         Vector expectedRotation = getRotation(playerLoc, entityLoc);
         double deltaYaw = clamp180(playerRotation.getX() - expectedRotation.getX());
-        double horizontalDistance = UtilMath.getHorizontalDistance(playerLoc, entityLoc);
+        double horizontalDistance = getHorizontalDistance(playerLoc, entityLoc);
         double distance = getDistance3D(playerLoc, entityLoc);
         double offsetX = deltaYaw * horizontalDistance * distance;
         return offsetX;
@@ -73,5 +73,24 @@ public class UtilCheck {
             theta += 360.0D;
         }
         return theta;
+    }
+
+    private static Vector getHorizontalVector(Vector vector) {
+        vector.setY(0);
+        return vector;
+    }
+
+    public static double getHorizontalDistance(Location one, Location two) {
+        final double x = Math.abs(Math.abs(one.getX()) - Math.abs(two.getX()));
+        final double z = Math.abs(Math.abs(one.getZ()) - Math.abs(two.getZ()));
+        return Math.sqrt(x * x + z * z);
+    }
+
+    public static double getOffset(Vector one, Vector two) {
+        return one.subtract(two).length();
+    }
+
+    public static double getAirSpeed(Location one, Location two) {
+        return getOffset(getHorizontalVector(one.toVector()), getHorizontalVector(two.toVector()));
     }
 }

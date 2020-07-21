@@ -9,7 +9,6 @@ import me.frep.vulcan.checks.Check;
 import me.frep.vulcan.checks.CheckType;
 import me.frep.vulcan.data.PlayerData;
 import me.frep.vulcan.utilities.UtilMath;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 public class KillAuraR extends Check {

@@ -8,31 +8,38 @@ import io.github.retrooper.packetevents.packetwrappers.in.useentity.WrappedPacke
 import me.frep.vulcan.checks.Check;
 import me.frep.vulcan.checks.CheckType;
 import me.frep.vulcan.data.PlayerData;
-import me.frep.vulcan.utilities.UtilLag;
-import me.frep.vulcan.utilities.UtilTime;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
-public class KillAuraA extends Check {
+public class KillAuraT extends Check {
 
-    public KillAuraA() {
-        super("KillAuraA", "Kill Aura (Type A)", CheckType.COMBAT, true, false, 8);
+    public KillAuraT() {
+        super("KillAuraT", "Kill Aura (Type T)", CheckType.COMBAT, true, false, 8);
     }
 
     @PacketHandler
-    public void onPacketReceive(PacketReceiveEvent e) {
+    public void onReceive(PacketReceiveEvent e) {
         Player p = e.getPlayer();
         PlayerData data = getDataManager().getPlayerData(p);
         if (e.getPacketId() == PacketType.Client.USE_ENTITY) {
             WrappedPacketInUseEntity packet = new WrappedPacketInUseEntity(e.getNMSPacket());
             if (!packet.getAction().equals(EntityUseAction.ATTACK)) return;
-            long delta = UtilTime.timeNow() - data.lastMovePacket;
-            if (delta < 5 && UtilLag.getPing(p) < 400 && UtilLag.getTPS() > 19.5) data.killAuraAVerbose++;
-            else {
-                if (data.killAuraAVerbose > 0) data.killAuraAVerbose--;
+            if (data.isOnGround) return;
+            double airSpeed = data.lastAirSpeed;
+            double maxSpeed = .29;
+            if (p.getWalkSpeed() > .21) maxSpeed += p.getWalkSpeed() / 1.25;
+            for (PotionEffect effect : p.getActivePotionEffects()) {
+                if (effect.getType().equals(PotionEffectType.SPEED)) maxSpeed += (effect.getAmplifier() + 1) * .065;
             }
-            if (data.killAuraAVerbose > 5) {
+            if (data.isNearIce(2)) maxSpeed += .075;
+            if (airSpeed > maxSpeed) data.killAuraTVerbose++;
+            else {
+                if (data.killAuraTVerbose > 0) data.killAuraTVerbose--;
+            }
+            if (data.killAuraTVerbose > 3) {
                 flag(p, null);
-                data.killAuraAVerbose = 0;
+                data.killAuraTVerbose = 0;
             }
         }
     }
